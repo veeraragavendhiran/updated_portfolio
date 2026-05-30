@@ -15,16 +15,21 @@ import {
 } from "lucide-react"
 import { AppShell } from "@/components/app-shell"
 
-// Create a singleton Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-const supabase = createClient(supabaseUrl, supabaseKey)
+interface RealtimeEvent {
+  path?: string
+  [key: string]: unknown
+}
+
+// Create a singleton Supabase client, safely handling missing env vars on Vercel
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null
 
 export default function DashboardPage() {
   const [activeUsers, setActiveUsers] = useState(0)
   const [pageViews, setPageViews] = useState(0)
   const [avgSession, setAvgSession] = useState(0)
-  const [realtimeEvents, setRealtimeEvents] = useState<Record<string, unknown>[]>([])
+  const [realtimeEvents, setRealtimeEvents] = useState<RealtimeEvent[]>([])
 
   useEffect(() => {
     // Generate initial mock data
@@ -43,6 +48,8 @@ export default function DashboardPage() {
       setPageViews((prev) => prev + Math.floor(Math.random() * 3))
     }, 3000)
 
+    if (!supabase) return
+
     // Set up Supabase Realtime subscription (mock channel if no table)
     const channel = supabase
       .channel("analytics")
@@ -58,7 +65,7 @@ export default function DashboardPage() {
 
     return () => {
       clearInterval(interval)
-      supabase.removeChannel(channel)
+      if (supabase) supabase.removeChannel(channel)
     }
   }, [])
 
@@ -167,7 +174,7 @@ export default function DashboardPage() {
                   <Globe className="w-4 h-4 text-cyan-400 mt-0.5" />
                   <div>
                     <p className="text-sm font-medium">Page View</p>
-                    <p className="text-xs text-muted-foreground">{ev.path || "/"}</p>
+                    <p className="text-xs text-muted-foreground">{(ev.path as string) || "/"}</p>
                   </div>
                   <span className="ml-auto text-[10px] text-muted-foreground">just now</span>
                 </motion.div>
