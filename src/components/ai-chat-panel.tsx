@@ -41,7 +41,7 @@ export function AIChatPanel({ open, onClose }: AIChatPanelProps) {
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || loading) return
-    const userMsg: Message = { id: Date.now().toString(), role: "user", content: text }
+    const userMsg: Message = { id: crypto.randomUUID(), role: "user", content: text }
     setMessages((prev) => [...prev, userMsg])
     setInput("")
     setLoading(true)
@@ -56,18 +56,17 @@ export function AIChatPanel({ open, onClose }: AIChatPanelProps) {
       if (!res.ok) throw new Error("API error")
       const reader = res.body?.getReader()
       const decoder = new TextDecoder()
-      let assistantContent = ""
-      const assistantId = Date.now().toString() + "-a"
+      const assistantId = crypto.randomUUID()
       setMessages((prev) => [...prev, { id: assistantId, role: "assistant", content: "" }])
 
       if (reader) {
         while (true) {
           const { done, value } = await reader.read()
           if (done) break
-          assistantContent += decoder.decode(value, { stream: true })
+          const chunk = decoder.decode(value, { stream: true })
           setMessages((prev) =>
             prev.map((m) =>
-              m.id === assistantId ? { ...m, content: assistantContent } : m
+              m.id === assistantId ? { ...m, content: m.content + chunk } : m
             )
           )
         }

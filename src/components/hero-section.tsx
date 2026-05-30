@@ -59,12 +59,17 @@ function useTypewriter(words: string[], speed = 80, pause = 2000) {
     } else if (deleting && charIndex > 0) {
       timeout = setTimeout(() => setCharIndex((c) => c - 1), speed / 2)
     } else if (deleting && charIndex === 0) {
-      setDeleting(false)
-      setWordIndex((w) => (w + 1) % words.length)
+      timeout = setTimeout(() => {
+        setDeleting(false)
+        setWordIndex((w) => (w + 1) % words.length)
+      }, speed / 2)
     }
 
-    setDisplayed(current.slice(0, charIndex))
-    return () => clearTimeout(timeout)
+    const displayTimeout = setTimeout(() => setDisplayed(current.slice(0, charIndex)), 0)
+    return () => {
+      clearTimeout(timeout)
+      clearTimeout(displayTimeout)
+    }
   }, [charIndex, deleting, wordIndex, words, speed, pause])
 
   return displayed

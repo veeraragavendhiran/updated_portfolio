@@ -24,13 +24,15 @@ export default function DashboardPage() {
   const [activeUsers, setActiveUsers] = useState(0)
   const [pageViews, setPageViews] = useState(0)
   const [avgSession, setAvgSession] = useState(0)
-  const [realtimeEvents, setRealtimeEvents] = useState<any[]>([])
+  const [realtimeEvents, setRealtimeEvents] = useState<Record<string, unknown>[]>([])
 
   useEffect(() => {
     // Generate initial mock data
-    setActiveUsers(Math.floor(Math.random() * 20) + 5)
-    setPageViews(Math.floor(Math.random() * 5000) + 1200)
-    setAvgSession(Math.floor(Math.random() * 120) + 45)
+    setTimeout(() => {
+      setActiveUsers(Math.floor(Math.random() * 20) + 5)
+      setPageViews(Math.floor(Math.random() * 5000) + 1200)
+      setAvgSession(Math.floor(Math.random() * 120) + 45)
+    }, 0)
 
     // Simulate real-time updates for demonstration if no actual table data comes in
     const interval = setInterval(() => {
@@ -124,12 +126,12 @@ export default function DashboardPage() {
           {/* Simulated Chart Graphic */}
           <div className="h-64 flex items-end justify-between gap-2">
             {Array.from({ length: 24 }).map((_, i) => {
-              const height = 20 + Math.random() * 80
+              const height = 20 + ((Math.sin(i * 0.5) + 1) / 2) * 80
               return (
                 <motion.div
                   key={i}
                   initial={{ height: 0 }}
-                  animate={{ height: \`\${height}%\` }}
+                  animate={{ height: `${height}%` }}
                   transition={{ duration: 1, delay: i * 0.05, ease: "easeOut" }}
                   className="w-full bg-gradient-to-t from-[var(--violet)]/20 to-[var(--violet)] rounded-t-sm"
                 />
@@ -187,7 +189,7 @@ export default function DashboardPage() {
   )
 }
 
-function MetricCard({ title, value, icon, trend, delay }: any) {
+function MetricCard({ title, value, icon, trend, delay }: { title: string; value: string; icon: React.ReactNode; trend: string; delay: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}

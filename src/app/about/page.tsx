@@ -2,7 +2,7 @@
 
 import { AppShell } from "@/components/app-shell"
 import { motion } from "framer-motion"
-import { User, Briefcase, GraduationCap, Code2, Heart } from "lucide-react"
+import { User, Briefcase, Code2 } from "lucide-react"
 import { buttonVariants } from "@/components/ui/button"
 
 export default function AboutPage() {
@@ -20,10 +20,10 @@ export default function AboutPage() {
             About Me
           </div>
           <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-6">
-            Hi, I'm <span className="gradient-text">Dev</span>.
+            Hi, I&apos;m <span className="gradient-text">Dev</span>.
           </h1>
           <p className="text-xl text-muted-foreground leading-relaxed mb-8">
-            I'm a full-stack engineer passionate about building high-performance web applications, 
+            I&apos;m a full-stack engineer passionate about building high-performance web applications, 
             real-time systems, and AI-driven products. I believe in clean code, exceptional user 
             experiences, and constant learning.
           </p>
